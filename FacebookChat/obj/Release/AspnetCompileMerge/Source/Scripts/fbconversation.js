@@ -1,12 +1,31 @@
-﻿$(document).on("fbload",
+﻿window.fbAsyncInit = function () {
+    FB.init({
+        appId: '756350858047307',
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: 'v3.2'
+    });
+    $(document).trigger("fbload");
+};
+
+(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) { return; }
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+var _pageToken;
+$(document).on("fbload",
     function () {
-        var _pageToken = "";
+        
         FB.getLoginStatus(function (response) {
             if (response.status !== "connected") {
                 _loginFacebook.call();
             } else {
                 _getProfile.call();
-                _pageToken = await _getPageToken("341754012625518");
+                _loadConversation.call();
             }
         });
 
@@ -35,12 +54,16 @@ _getProfile = () => {
     );
 }
 
-_loadConversation = () => {
+_loadConversation = async () => {
+    if (!_pageToken) {
+        _pageToken = await _getPageToken;
+        console.log(_pageToken);
+    }
     FB.api("me/conversations?fields=unread_count,updated_time,message_count,senders",
         "GET",
-        {access_token:_pageToken},
+        { access_token: _pageToken },
         response => {
-            conso
+//            conso
         });
 }
 updateProfile = rp => {
@@ -48,19 +71,26 @@ updateProfile = rp => {
     $("#profile-name").text(rp.name);
 }
 
-_getPageToken = pageId => {
-    FB.api("me/accounts",
-        "GET",
-        {},
-        response => {
-            return new Promise(resolve => {
-                const page = Jquery.map(response.data,
+_getPageToken = async  pageId => {
+    const promise = new Promise((resolve, reject) => {
+        FB.api("me/accounts",
+            "GET",
+            {},
+            response => {
+                const page = jQuery.map(response.data,
                     data => {
                         if (data.id === pageId) {
                             return data;
                         }
+                        return null;
                     });
-                resolve(page);
+                if (page) {
+                    resolve(page[0]);
+                } else {
+                    reject(page);
+                }
             });
-        });
+    });
+
+    return await promise;
 }

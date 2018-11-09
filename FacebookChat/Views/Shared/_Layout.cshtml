@@ -6,15 +6,8 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    <script>
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
+
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -40,38 +33,27 @@
         @RenderBody()
         <hr />
         <footer>
-            <div id="fb-root"></div>
-            <div class="fb-customerchat"
-                 attribution=setup_tool
-                 page_id="341754012625518"
-                 theme_color="#13cf13"
-                 logged_in_greeting="Công ty Thái Sơn kính chào quý khách."
-                 logged_out_greeting="Công ty Thái Sơn kính chào quý khách.">
-            </div>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>
+@*        <script>*@
+@*    (function (d, s, id) {*@
+@*        var js, fjs = d.getElementsByTagName(s)[0];*@
+@*        if (d.getElementById(id)) return;*@
+@*        js = d.createElement(s); js.id = id;*@
+@*        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';*@
+@*        fjs.parentNode.insertBefore(js, fjs);*@
+@*            }(document, 'script', 'facebook-jssdk'));*@
+@*        </script>*@
+@*        <!-- Your customer chat code -->*@
+@*        <div class="fb-customerchat"*@
+@*             attribution=setup_tool*@
+@*             page_id="341754012625518"*@
+@*             theme_color="#13cf13"*@
+@*             logged_in_greeting="Công ty Thái Sơn kính chào quý khách"*@
+@*             logged_out_greeting="Công ty Thái Sơn kính chào quý khách">*@
+@*        </div>*@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
-    <script>
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '158207517908772',
-                autoLogAppEvents: true,
-                xfbml: true,
-                version: 'v3.2'
-            });
-            $(document).trigger("fbload");
-        };
-
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
