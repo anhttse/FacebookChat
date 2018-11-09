@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "Contact";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+
+    <title>facebôk</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v3.0&appId=201092373837964&autoLogAppEvents=1';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+    <script>
+
+
+
+
+
+
+
+    window.fbAsyncInit = function() {
+    FB.init({
+        appId: '756350858047307', // APP ID ứng dụng của bạn
+      cookie     : true,  // Kích hoạt cookies
+
+      xfbml      : true,  // plugins xã hội
+      version    : 'v3.0' // Sử dụng version 2.1
+    });
+
+
+    _getInfo();
+    };
+
+    function facebook_send_message() {
+      $("#loading").css("display","block");
+      var message=document.getElementById("sendBox").value
+      var idInbox= document.getElementById("idInbox").value;
+      var linkSend =idInbox+"/messages?message=" +message
+alert(linkSend)
+      FB.api(linkSend, 'POST', { access_token:acp }, function (response) {
+         console.log(response)
+  if(response.id!=""){
+    var row ="<div class='block' style='text-align:right' id='"+response.id+"'>\
+<div><b>Noi dung:</b>"+message+"</div>\
+</div>";
+
+ $( row ).insertBefore( "#NoiDungChat .lastBox" );
+ $("#loading").css("display","none");
+  }
+
+                 });
+}
+
+
+        var acp = 'EAAKv5ag4L0sBAChYQ01ZCz1dbt52z2CK5sqfu54cw34M4OM3POn8bl7ZCGZCKpNm0rAcipWM07ZCd5tE8KZA4aoAc5RjXaBUoHYf3TpPJF9FcbQBv4SBGsGPRrRdZCSfCw9TfO0aZA2wPsUVZBlDJxdPm57Ft5pZBwzr11WVEUsnHpoZArHScR1BzBZAc4GaRTHZApdga3o9bNIH5wZDZD';
+
+   var pageid='1335337453147675';
+   window.fbAsyncInit = function () {
+       FB.init({
+           appId: '201092373837964', // APP ID ứng dụng của bạn
+           cookie: true,  // Kích hoạt cookies
+
+           xfbml: true,  // plugins xã hội
+           version: 'v3.0' // Sử dụng version 2.1
+       });
+       _getInfo();
+   };
+
+   function facebook_send_message() {
+       $("#loading").css("display", "block");
+       var message = document.getElementById("sendBox").value
+       var idInbox = document.getElementById("idInbox").value;
+       var linkSend = idInbox + "/messages?message=" + message
+       alert(linkSend)
+       FB.api(linkSend, 'POST', { access_token: acp }, function (response) {
+           console.log(response)
+           if (response.id != "") {
+               var row = "<div class='block' style='text-align:right' id='" + response.id + "'>\
+<div><b>Noi dung:</b>"+ message + "</div>\
+</div>";
+
+               $(row).insertBefore("#NoiDungChat .lastBox");
+               $("#loading").css("display", "none");
+           }
+
+       });
+   }
+   function _getInfo() {
+    $("#loading").css("display","block");
+      FB.api('/me', 'GET', { access_token:acp }, function (response) {
+         console.log(response)
+         $("#idPage").html(response.id)
+         $("#namePage").html(response.name)
+
+         _getConversations()
+
+                 });
+    }
+    function _getConversations() {
+
+        FB.api('//conversations', 'GET', { access_token:acp }, function (response) {
+         console.log(response)
+            document.getElementById("countHoiThoai").innerHTML = response.data.length;
+         var text="";
+         for (i = 0; i < response.data.length; i++) {
+           if(pageid!=response.data[i].senders.data[0].id)
+          text += "<li onclick=_getViewInbox('"+response.data[i].id + "') data-id='"+response.data[i].id + "' ><b>"+response.data[i].senders.data[0].name + ":</b> <ul><li>tổng số tin nhắn:"+response.data[i].message_count+"</li></ul> </li>";
+          else
+          text += "<li><b>"+response.data[i].senders.data[1].name + ":</b> <ol><li>tổng số tin nhắn:"+response.data[i].message_count+"</li></ol> </li>";
+          }
+          document.getElementById("danhsachhoithoai").innerHTML =text;
+          $("#loading").css("display","none");
+                 });
+
+    }
+   function _getViewInbox(idInbox) {
+    $("#loading").css("display","block");
+
+    FB.api(idInbox+'/messages?fields=message,created_time,from,id,to&limit=5', 'GET', { access_token:acp }, function (response) {
+     console.log(response)
+// hiển thị danh sách
+for (i = 0; i < response.data.length; i++) {
+  var textalign="";
+  console.log(response.data[i].to.data[0].id )
+if(pageid!= response.data[i].to.data[0].id){
+  textalign="text-align:right";
+}
+
+var row ="<div class='block' style="+textalign+">\
+<div><b>name:</b>"+response.data[i].from.name+"</div>\
+<div><b>time:</b>"+response.data[i].created_time+"</div>\
+<div><b>Noi dung:</b>"+response.data[i] .message+"</div>\
+</div>";
+
+ $( row ).insertAfter( "#NoiDungChat .loading" );
+
+}
+$("#NoiDungChat").animate({ scrollTop: $('#NoiDungChat').prop("scrollHeight")}, 1000);
+
+document.getElementById("idInbox").value = idInbox;
+     document.getElementById("btnnext").value = response.paging.cursors.after;
+     document.getElementById("btnPrev").value = response.paging.cursors.before;
+             });
+             $("#loading").css("display","none");
+}
+function _getNext() {
+  $("#loading").css("display","block");
+  var idInbox= document.getElementById("idInbox").value;
+ var btnnext= document.getElementById("btnnext").value
+    var linkNext=idInbox+'/messages?fields=message,created_time,from,id,to&limit=5&after='+btnnext;
+    FB.api(linkNext, 'GET', { access_token:acp }, function (response) {
+     console.log(response)
+if(response.data.length>0){
+// hiển thị danh sách
+var lastId="";
+for (i = 0; i < response.data.length; i++) {
+  var textalign="";
+  console.log(response.data[i].to.data[0].id )
+if(pageid!= response.data[i].to.data[0].id){
+  textalign="text-align:right";
+}
+
+var row ="<div class='block' style="+textalign+" id='"+response.data[i].id+"'>\
+<div><b>name:</b>"+response.data[i].from.name+"</div>\
+<div><b>time:</b>"+response.data[i].created_time+"</div>\
+<div><b>Noi dung:</b>"+response.data[i] .message+"</div>\
+</div>";
+
+ $( row ).insertAfter( "#NoiDungChat .loading" );
+ lastId=response.data[i].id;
+}
+$("#NoiDungChat #" +lastId).animate({ scrollTop: $("#NoiDungChat #" +lastId).prop("scrollHeight")}, 1000);
+
+document.getElementById("btnnext").value = response.paging.cursors.after;
+     document.getElementById("btnPrev").value = response.paging.cursors.before;
+}else{
+ console.log("========================= đã hết")
+}
+
+$("#loading").css("display","none");
+             });
+}
+function _getPrev() {
+  var idInbox= document.getElementById("idInbox").value;
+ var btnnext= document.getElementById("btnPrev").value
+    var linkNext=idInbox+'/messages?fields=message,created_time,from,id,to&limit=5&before='+btnnext;
+    FB.api(linkNext, 'GET', { access_token:acp }, function (response) {
+     console.log(response)
+     document.getElementById("btnnext").value = response.paging.cursors.after;
+     document.getElementById("btnPrev").value = response.paging.cursors.before;
+
+             });
+}
+$(document).on("click","#countHoiThoai li",function(){
+
+  $("#idInbox").val($(this).attr("data-id"))
+})
+    </script>
+</head>
+<body>
+    <div id="loading" style="position: fixed;width: 100%;height: 100%;background: rgba(0,0,0,0.5);text-align: center;padding-top: 10%;box-sizing: border-box;display: none">
+        <img src="loading.gif" />
+    </div>
+    <div id="status"></div>
+
+    <div class="btn btn-sm btn-primary btn-block" onclick="_getInfo();">Kiểm tra thông tin</div>
+    <div class="btn btn-sm btn-primary btn-block" onclick="_getConversations();">Lấy danh sách inbox</div>
+    <div class="btn btn-sm btn-primary btn-block" onclick="_getViewInbox();">Get inbox</div>
+    <input type="text" id="idInbox" value="">
+    <input type="hidden" id="btnnext" value="">
+    <input type="hidden" id="btnPrev" value="">
+    <div onclick="_getNext()" id="">next</div>
+    <div onclick="_getPrev()" id="">Prev</div>
+
+    <hr />
+    <hr />
+    <ul>
+        <li><b>id page:</b> <b id="idPage"></b></li>
+        <li>
+            <b>name page:</b> <b id="namePage"></b>
+
+        </li>
+    </ul>
+    <div id="Thongtinhoithoai">
+        <ul>
+            <li><b>Tổng số hội thoại:</b> <b style="color: red" id="countHoiThoai"></b></li>
+
+        </ul>
+        <div style="width: 300px;float: left;">
+            <b>Danh sách người chat</b>
+            <div></div>
+            <ul id="danhsachhoithoai"></ul>
+        </div>
+        <div style="width: 500px;float: left;max-height: 400px;overflow:auto" id="NoiDungChat">
+            <div class="loading" onclick="_getNext()">Load more</div>
+            <div class="lastBox"></div>
+            <div id="xoanthao">
+                <textarea id="sendBox" placeholder="Nội dung"></textarea>
+                <div onclick="facebook_send_message();">Gửi</div>
+            </div>
+        </div>
+        <style>
+            .block {
+                background: cornflowerblue;
+                margin-bottom: 10px
+            }
+        </style>
+    </div>
+</body>
+</html> 
