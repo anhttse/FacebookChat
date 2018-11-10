@@ -80,3 +80,15 @@ E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AI.WindowsSe
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AI.Web.xml
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\obj\Debug\FacebookChat.dll
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\obj\Debug\FacebookChat.pdb
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.Core.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.SystemWeb.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Host.SystemWeb.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Security.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Owin.dll
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.Core.xml
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.xml
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Host.SystemWeb.xml
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Security.xml
+E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\obj\Debug\FacebookChat.csprojResolveAssemblyReference.cache

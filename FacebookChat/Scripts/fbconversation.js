@@ -236,5 +236,5 @@ $("#status-options ul li").click(function () {
 
 var chat = $.connection.chatHub;
 chat.client.addNewMessageToPage = function (msg) {
-
+    console.log(msg);
 };

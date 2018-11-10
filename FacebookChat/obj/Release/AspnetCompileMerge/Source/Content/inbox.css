@@ -1,4 +1,5 @@
 ﻿.conversation {
+    position: relative;
     margin-top: 50px;
     display: flex;
     align-items: center;
@@ -54,7 +55,6 @@
     width: 80%;
     margin: 25px auto;
 }
-
 @media screen and (max-width: 735px) {
     #frame #sidepanel #profile {
         width: 100%;
@@ -385,7 +385,7 @@
 
 #frame #sidepanel #contacts {
     height: calc(100% - 177px);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -432,7 +432,7 @@
 }
 
 #frame #sidepanel #contacts ul li.contact.active {
-    background: #32465a;
+    background: #243140;
     border-right: 5px solid #435f7a;
 }
 
@@ -657,12 +657,12 @@
     }
 }
 
-#frame .content .messages::-webkit-scrollbar {
-    width: 8px;
+#frame div.content .messages::-webkit-scrollbar {
+    width: 2px;
     background: transparent;
 }
 
-#frame .content .messages::-webkit-scrollbar-thumb {
+#frame div.content .messages::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -735,7 +735,8 @@
             border: none;
             width: calc(100% - 90px);
             padding: 11px 32px 10px 8px;
-            font-size: 0.8em;
+            font-size: 1.1em;
+            border-radius: 5px;
             color: #32465a;
         }
 
