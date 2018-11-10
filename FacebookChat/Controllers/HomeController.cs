@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 
 namespace FacebookChat.Controllers
 {
@@ -11,6 +12,11 @@ namespace FacebookChat.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public void Webhook(object evt)
+        {
+            System.IO.File.AppendAllText(Server.MapPath("~/Content/webhook.txt"),JsonConvert.SerializeObject(evt));
         }
 
         public ActionResult About()
