@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FacebookChat.Hubs;
+using MessengerBot.Models;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 
@@ -35,7 +36,7 @@ namespace FacebookChat.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Receive(object data)
+        public ActionResult Receive(WebhookModel data)
         {
             System.IO.File.AppendAllText(Server.MapPath("~/Content/webhook.txt"),JsonConvert.SerializeObject(data));
             var hub = GlobalHost.ConnectionManager.GetHubContext<MessengerHub>();

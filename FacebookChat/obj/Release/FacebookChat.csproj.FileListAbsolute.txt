@@ -92,3 +92,14 @@ E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.AspNet.Signa
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.xml
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Host.SystemWeb.xml
 E:\AnhTT\Workspace\Facebook\FacebookChat\FacebookChat\bin\Microsoft.Owin.Security.xml
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.Core.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.SystemWeb.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.Host.SystemWeb.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.Security.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Owin.dll
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.Core.xml
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.xml
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.Host.SystemWeb.xml
+C:\Users\AnhTT.ANHTT\source\repos\FacebookChat\FacebookChat\bin\Microsoft.Owin.Security.xml
