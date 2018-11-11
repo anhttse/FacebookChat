@@ -93,7 +93,6 @@ _loadConversation = async () => {
         "GET",
         { access_token: _pageToken },
         response => {
-            console.log(response);
             updateContact(response.data);
         });
 }
@@ -104,7 +103,6 @@ _loadConversationContent = async convsersationId => {
         response => {
             const canRep = response.can_reply;
             const msgs = response.messages.data;
-            console.log(msgs);
             msgs.forEach(msg => {
                 addChatMessage(msg);
             });
@@ -131,9 +129,7 @@ updateContact = (arr) => {
         const sender = contact.senders.data[0];
         const lastMsg = contact.messages.data[0];
         const msg = lastMsg.from.id === _pageId ? `Bạn: ${lastMsg.message}` : lastMsg.message;
-        console.log(contact.id);
-        console.log(sender.id);
-        const item = $(`<li class="contact" data-conversationid="${contact.id}">
+        const item = $(`<li class="contact" data-userid="${sender.id}" data-conversationid="${contact.id}">
                         <div class="wrap">
                             <span class="contact-status online"></span>
                             <img src="${getPicture(sender.id)}" alt="" />
@@ -161,6 +157,18 @@ addChatMessage = (msg) => {
                         <p>${content}</p>
                     </li>`);
     $("#content-box ul").prepend(message);
+}
+
+newMessageReceive = (sender,msg) => {
+    const isSender = sender === _pageId;
+    const cls = isSender ? "sent" : "replies";
+    const content = msg.message.text;
+    const message = $(`<li class="${cls}">
+                        <img src="${getPicture(sender)}" alt="" />
+                        <p>${content}</p>
+                    </li>`);
+    $("#content-box ul").append(message);
+    $(".messages").animate({ scrollTop: $(".messages").height() }, "fast");
 }
 
 getPicture = uId => {
@@ -234,7 +242,16 @@ $("#status-options ul li").click(function () {
 });
 /*extension functions - end*/
 
-var chat = $.connection.chatHub;
-chat.client.addNewMessageToPage = function (msg) {
-    console.log(msg);
+var chat = $.connection.messengerHub;
+chat.client.addNewMessageToPage = function (message) {
+    const sender = message.sender.id;
+    const isChatting = $("#contacts").find(`li.contact.active[data-userid="${sender}"]`).length > 0;
+    $(`#contacts li.contact[data-userid="${sender}"]`).find("p.preview").text(message.message.text);
+    if (isChatting) {
+        newMessageReceive(sender, message);
+    }
 };
+
+$.connection.hub.start().done(function () {
+
+});

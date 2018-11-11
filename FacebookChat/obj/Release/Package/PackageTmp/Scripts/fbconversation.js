@@ -93,7 +93,6 @@ _loadConversation = async () => {
         "GET",
         { access_token: _pageToken },
         response => {
-            console.log(response);
             updateContact(response.data);
         });
 }
@@ -104,7 +103,6 @@ _loadConversationContent = async convsersationId => {
         response => {
             const canRep = response.can_reply;
             const msgs = response.messages.data;
-            console.log(msgs);
             msgs.forEach(msg => {
                 addChatMessage(msg);
             });
@@ -131,8 +129,6 @@ updateContact = (arr) => {
         const sender = contact.senders.data[0];
         const lastMsg = contact.messages.data[0];
         const msg = lastMsg.from.id === _pageId ? `Bạn: ${lastMsg.message}` : lastMsg.message;
-        console.log(contact.id);
-        console.log(sender.id);
         const item = $(`<li class="contact" data-conversationid="${contact.id}">
                         <div class="wrap">
                             <span class="contact-status online"></span>
@@ -234,7 +230,11 @@ $("#status-options ul li").click(function () {
 });
 /*extension functions - end*/
 
-var chat = $.connection.chatHub;
-chat.client.addNewMessageToPage = function (msg) {
-    console.log(msg);
+var chat = $.connection.messengerHub;
+chat.client.addNewMessageToPage = function (message) {
+    console.log(message);
 };
+
+$.connection.hub.start().done(function () {
+
+});

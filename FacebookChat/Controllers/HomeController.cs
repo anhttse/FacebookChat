@@ -38,9 +38,18 @@ namespace FacebookChat.Controllers
         [HttpPost]
         public ActionResult Receive(WebhookModel data)
         {
+            foreach (var entry in data.entry)
+            {
+                foreach (var msg in entry.messaging)
+                {
+                    if (string.IsNullOrWhiteSpace(msg?.message?.text))
+                        continue;
+
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MessengerHub>();
+                    hub.Clients.All.addNewMessageToPage(msg);
+                }
+            }
             System.IO.File.AppendAllText(Server.MapPath("~/Content/webhook.txt"),JsonConvert.SerializeObject(data));
-            var hub = GlobalHost.ConnectionManager.GetHubContext<MessengerHub>();
-            hub.Clients.All.addNewMessageToPage(data);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         public ActionResult About()
