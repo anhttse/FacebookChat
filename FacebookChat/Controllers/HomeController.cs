@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -38,17 +39,19 @@ namespace FacebookChat.Controllers
         [HttpPost]
         public ActionResult Receive(WebhookModel data)
         {
-            foreach (var entry in data.entry)
-            {
-                foreach (var msg in entry.messaging)
-                {
-                    if (string.IsNullOrWhiteSpace(msg?.message?.text))
-                        continue;
-
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<MessengerHub>();
-                    hub.Clients.All.addNewMessageToPage(msg);
-                }
-            }
+            var hub = GlobalHost.ConnectionManager.GetHubContext<MessengerHub>();
+            //            foreach (var entry in data.entry)
+            //            {
+            //                foreach (var msg in entry.messaging)
+            //                {
+            //                    if (string.IsNullOrWhiteSpace(msg?.message?.text))
+            //                        continue;
+            //
+            //                   
+            //                    hub.Clients.All.addNewMessageToPage(msg);
+            //                }
+            //            }
+            hub.Clients.All.addNewMessageToPage(data);
             System.IO.File.AppendAllText(Server.MapPath("~/Content/webhook.txt"),JsonConvert.SerializeObject(data));
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }

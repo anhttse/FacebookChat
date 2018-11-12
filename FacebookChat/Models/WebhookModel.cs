@@ -46,5 +46,25 @@ namespace MessengerBot.Models
         public string mid { get; set; }
         public int seq { get; set; }
         public string text { get; set; }
+        public List<Attachment> attachments { get; set; }
+        public QuickReply quick_reply { get; set; }
+    }
+
+    public class Attachment
+    {
+        public string type { get; set; }
+        public Payload payload { get; set; }
+
+    }
+
+    public class Payload
+    {
+        public string url { get; set; }
+        public string title { get; set; }
+    }
+
+    public class QuickReply
+    {
+        public string payload { get; set; }
     }
 }
