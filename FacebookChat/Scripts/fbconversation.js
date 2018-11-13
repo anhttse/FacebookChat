@@ -98,19 +98,42 @@ _loadConversation = async () => {
 }
 
 _loadConversationContent = async convsersationId => {
-    FB.api(`${convsersationId}?fields=can_reply,messages.limit(10){message,created_time,from,attachments{name,file_url}}`,
+    FB.api(`${convsersationId}?fields=can_reply,messages.limit(10){message,created_time,from,attachments{name,file_url,image_data,mime_type,video_data}}`,
         { access_token: _pageToken },
         response => {
             const canRep = response.can_reply;
             const msgs = response.messages.data;
             msgs.forEach(msg => {
-                addChatMessage(msg);
+                appendChatMessage(msg);
             });
             $("#content-loading").hide();
             $(".messages").animate({ scrollTop: $(document).height() }, "fast");
         });
 };
-
+_sendAttachFile = () => {
+    const recipient = $("#contacts").find(`li.contact.active`).data("userid");
+    var file = $("#attachFile")[0].files[0];
+    
+    if (!recipient || !type) return;
+    const type = file.type.split("/")[0];
+    const form = new FormData();
+    form.append("recipient", `{ "id" : "${recipient}"}`);
+    form.append("message", `{"attachment":{"type":"${type}", "payload":{"is_reusable":true}}}`);
+    form.append("filedata", file);
+    $.ajax({
+        url: `https://graph.facebook.com/v2.6/me/messages?access_token=${_pageToken}`,
+        method: "post",
+        data: form,
+        contentType: false,
+        processData: false,
+        success:response => {
+            console.log(response);
+        },
+        error: (xhr, textStatus, errorThrown) => {
+//            console.log(xhr);
+        }
+    });
+}
 //call back functions
 loginModal = () => {
     $("#fblogin-modal").modal("show");
@@ -146,20 +169,58 @@ updateContact = (arr) => {
     $("#contacts li.contact:eq(0)").click();
 }
 
-addChatMessage = (msg) => {
+appendChatMessage = (msg) => {
+    console.log(msg);
     const uId = msg.from.id;
     const isSender = uId === _pageId;
     const cls = isSender ? "sent" : "replies";
-    const hasAttachments = msg.attachments ? true : false;
-    const content = hasAttachments ? `<a href="${msg.attachments.data[0].file_url}">${msg.attachments.data[0].name}</a>` : msg.message;
+//    const mimeType = msg = msg.attachments.data[0].mime_type;
+    const content = getContent(msg);
     const message = $(`<li class="${cls}">
-                        <img src="${getPicture(uId)}" alt="" />
-                        <p>${content}</p>
+                        <img class="avatar" src="${getPicture(uId)}" alt="" />
+                        ${content}
                     </li>`);
     $("#content-box ul").prepend(message);
 }
 
-newMessageReceive = (sender,msg) => {
+getContent = (msg) => {
+    var attachments = msg.attachments;
+    console.log(attachments);
+    var type = "message";
+    if (attachments) {
+        type = attachments.data[0].mime_type.split("/")[0] === "image" ? "image" : "file";
+    }
+    console.log(type);
+    switch (type) {
+        case "message":
+            return `<p>${msg.message}</p>`;
+        case "image":
+            {
+                const imageData = attachments.data[0].image_data;
+                if (imageData) {
+                    const width = imageData.width;
+                    const height = imageData.height;
+                    const previewUrl = imageData.preview_url;
+                    const imgUrl = imageData.url;
+                    return `<div class='img-attach' data-url='${imgUrl}' style='${getImgSize(width, height)};border-radius: 20px; background-image: url("${previewUrl}"); background-position: center center;display:inline-block'>
+                        </div>`;
+                }
+                return `<img style="border-radius:20px;" src="${attachments.data[0].file_url}/>"`;
+            }
+        case "file":
+            return `<p><a href="${attachments.data[0].file_url}">${attachments.data[0].name}</a></p>`;
+    default:
+    }
+    return "";
+}
+getImgSize = (width, height) => {
+    const imgMaxWidth = 300;
+    if (width <= imgMaxWidth)
+        return `width:${width}px;height:${height}px`;
+    const ratio = width / height;
+    return `width:${imgMaxWidth}px;height:${Math.round(imgMaxWidth/ratio)}px`;
+}
+newMessageReceive = (sender, msg) => {
     const isSender = sender === _pageId;
     const cls = isSender ? "sent" : "replies";
     const content = msg.message.text;
@@ -174,7 +235,6 @@ newMessageReceive = (sender,msg) => {
 getPicture = uId => {
     return `https://graph.facebook.com/v3.2/${uId}/picture?access_token=${_pageToken}`;
 }
-
 
 newMessage = () => {
     const conversationId = $("#contacts li.contact.active").data("conversationid");
@@ -242,14 +302,18 @@ $("#status-options ul li").click(function () {
 });
 /*extension functions - end*/
 
+/*SignalR */
 var chat = $.connection.messengerHub;
-chat.client.addNewMessageToPage = function (message) {
-    const sender = message.sender.id;
-    const isChatting = $("#contacts").find(`li.contact.active[data-userid="${sender}"]`).length > 0;
-    $(`#contacts li.contact[data-userid="${sender}"]`).find("p.preview").text(message.message.text);
-    if (isChatting) {
-        newMessageReceive(sender, message);
-    }
+chat.client.addNewMessageToPage = function (data) {
+    const entry = data.entry[0];
+    const sender = entry.id;
+    const message = entry.messaging[0];
+//    const sender = message.sender.id;
+//    const isChatting = $("#contacts").find(`li.contact.active[data-userid="${sender}"]`).length > 0;
+//    $(`#contacts li.contact[data-userid="${sender}"]`).find("p.preview").text(message.message.text);
+//    if (isChatting) {
+//        newMessageReceive(sender, message);
+//    }
 };
 
 $.connection.hub.start().done(function () {

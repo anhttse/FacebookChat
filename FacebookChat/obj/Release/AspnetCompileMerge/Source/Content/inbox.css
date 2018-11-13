@@ -698,13 +698,14 @@
         float: right;
     }
 
-    #frame .content .messages ul li img {
+    #frame .content .messages ul li img.avatar {
         width: 22px;
+        -ms-border-radius: 50%;
         border-radius: 50%;
         float: left;
     }
 
-    #frame .content .messages ul li p {
+#frame .content .messages ul li p {
         display: inline-block;
         padding: 10px 15px;
         border-radius: 20px;
