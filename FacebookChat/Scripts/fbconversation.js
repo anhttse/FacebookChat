@@ -75,9 +75,11 @@ _loginFacebook = () => {
             'onok': function () {
                 FB.login(function (response) {
                     console.log(response);
+                    _getProfile.call();
+                    _loadConversation.call();
                 }, { scope: 'public_profile,email,manage_pages,read_page_mailboxes' });
             }
-        }).show();
+        }).setHeader('<b> Thong bao </b> ').show();
 }
 _getProfile = () => {
     FB.api(
@@ -117,19 +119,21 @@ _loadConversationContent = async convsersationId => {
     console.log(data);
     const canRep = data.can_reply;
     const msgs = data.messages.data;
-    for(let msg of msgs) {
+    for (let msg of msgs) {
         await loadChatMessage(msg);
     }
     $("#content-loading").hide();
-    $(".messages").animate({ scrollTop: $(document).height() }, "fast");
-    
+    $(".messages").animate({ scrollTop: $(".messages")[0].scrollHeight }, "fast");
+
 };
 _sendAttachFile = () => {
     const recipient = $("#contacts").find(`li.contact.active`).data("userid");
     var file = $("#attachFile")[0].files[0];
 
-    if (!recipient || !type) return;
-    const type = file.type.split("/")[0];
+    if (!recipient || !file) return;
+    let type = file.type.split("/")[0];
+    if (type !== "image") type = "file";
+    console.log(type);
     const form = new FormData();
     form.append("recipient", `{ "id" : "${recipient}"}`);
     form.append("message", `{"attachment":{"type":"${type}", "payload":{"is_reusable":true}}}`);
@@ -142,9 +146,10 @@ _sendAttachFile = () => {
         processData: false,
         success: response => {
             console.log(response);
+            $("#attachFile").val("");
         },
         error: (xhr, textStatus, errorThrown) => {
-            //            console.log(xhr);
+            console.log(xhr);
         }
     });
 }
@@ -229,6 +234,7 @@ getMeta = async (url) => {
     });
 }
 getChatMessage = (type, msg) => {
+    console.log("content:" + msg.message);
     switch (type) {
         case "message":
             return `<p>${msg.message}</p>`;
@@ -255,34 +261,49 @@ getImgSize = (width, height) => {
     const ratio = width / height;
     return `width:${imgMaxWidth}px;height:${Math.round(imgMaxWidth / ratio)}px`;
 }
-newMessageReceive = async (msg) => {
+newMessageReceive = async (hasAttach, msg) => {
     const sender = msg.sender.id;
-    const hasAttach = msg.message.attachments ? true : false;
+    const recipient = msg.recipient.id;
+    const activeId = sender != _pageId ? sender : recipient;
     let type = "message";
+    const isSender = sender === _pageId;
+    let preViewContent = "";
     if (hasAttach) {
-        type = msg.message.attachments[0].payload.type;
+        type = msg.message.attachments[0].type;
+
     }
+    console.log(type);
     let content = "";
     if (type === "message") {
-        getChatMessage(type, {message:msg.text});
+        content = getChatMessage(type, { message: msg.message.text });
+        preViewContent = isSender ? `Ban: ${msg.message.text}` : msg.message.text;
     }
     if (type === "image") {
-        const url = msg.attachments[0].payload.url;
+        const url = msg.message.attachments[0].payload.url;
         const img = await getMeta(url);
-        getChatMessage(type, { width: img.width, height: img.height, previewUrl: url, imgUrl: url });
+        console.log(url);
+        content = getChatMessage(type, { width: img.width, height: img.height, preview_url: url, url: url });
+        preViewContent = isSender ? "Ban da gui 1 file anh" : "da gui mot file anh";
     }
-    const isChatting = $("#contacts").find(`li.contact.active[data-userid="${sender}"]`).length > 0;
-    $(`#contacts li.contact[data-userid="${sender}"]`).find("p.preview").text(message.message.text);
+    if (type === "file") {
+        const url = msg.message.attachments[0].payload.url;
+        let name = url.split("?")[0].split("/").pop();
+        name = $('<textarea />').html(name).text();
+        content = getChatMessage(type, { file_url: url, name: name });
+        preViewContent = isSender ? "Ban da gui 1 file" : "da gui mot file";
+    }
+    const isChatting = $("#contacts").find(`li.contact.active[data-userid="${activeId}"]`).length > 0;
+
+    $(`#contacts li.contact[data-userid="${activeId}"]`).find("p.preview").text(preViewContent);
     if (isChatting) {
-        const isSender = sender === _pageId;
         const cls = isSender ? "sent" : "replies";
 
         const message = $(`<li class="${cls}">
-                        <img src="${getPicture(sender)}" alt="" />
+                        <img class="avatar" src="${getPicture(sender)}" alt="" />
                         ${content}
                     </li>`);
         $("#content-box ul").append(message);
-        $(".messages").animate({ scrollTop: $(".messages").height() }, "fast");
+        $(".messages").animate({ scrollTop: $(".messages")[0].scrollHeight }, "fast");
     }
 }
 
@@ -298,22 +319,40 @@ newMessage = () => {
     }
     FB.api(`${conversationId}/messages`, "POST", { message: msg, access_token: _pageToken }, response => {
         if (response.id) {
-            $(`<li class="sent"><img src="${getPicture(_pageId)}" alt="" /><p>${msg}</p></li>`).appendTo($('.messages ul'));
             $('.message-input input').val(null);
-            $('.contact.active .preview').html('<span>Bạn: </span>' + msg);
-            $(".messages").animate({ scrollTop: $(document).height() }, "fast");
+
         }
     });
 };
 
 /* event binding (main) */
+$(".message-input i.attachment").on("click", function (e) {
+    e.preventDefault();
+    $("#attachFile").click();
+    return false;
+});
+$("#attachFile").on("change", e => {
+    const name = e.target.files[0].name;
+    const el = `<li class="file-item">
+					<span class="filename">${name}</span>
+					<i class="fa fa-times remove"></i>
+				</li>`;
+    $(".message-input ul.files").append(el);
+})
+$(".files").on("click", ".remove", e => {
+    $(e.target).closest("li.file-item").remove();
+    $("#attachFile").val("");
+});
 $('.submit').click(function () {
     newMessage();
+    _sendAttachFile();
+    return false;
 });
 
 $(window).on('keydown', function (e) {
     if (e.which == 13) {
         newMessage();
+        _sendAttachFile();
         return false;
     }
 });
@@ -361,7 +400,10 @@ var chat = $.connection.messengerHub;
 chat.client.addNewMessageToPage = function (data) {
     const entry = data.entry[0];
     const message = entry.messaging[0];
-    newMessageReceive(message);
+    console.log(message);
+    if (!message.message) return;
+    const hasAttach = message.message.attachments ? true : false;
+    newMessageReceive(hasAttach, message);
 };
 
 $.connection.hub.start().done(function () {
