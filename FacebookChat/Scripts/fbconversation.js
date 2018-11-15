@@ -25,6 +25,7 @@ $(document).on("fbload",
                 //show login modal
                 _loginFacebook.call();
             } else {
+                _getPageInfo();
                 _getProfile.call();
                 _loadConversation.call();
             }
@@ -75,11 +76,34 @@ _loginFacebook = () => {
             'onok': function () {
                 FB.login(function (response) {
                     console.log(response);
+                    _getPageInfo();
                     _getProfile.call();
                     _loadConversation.call();
                 }, { scope: 'public_profile,email,manage_pages,read_page_mailboxes' });
             }
         }).setHeader('<b> Thong bao </b> ').show();
+}
+
+_getPageInfo=() => {
+    FB.api("me/accounts?fields=name,category,access_token",
+        {},
+        response => {
+            const pages = response.data;
+            let options = "";
+            pages.forEach(e => {
+                options += `<option value="${e.id}|${e.access_token}">${e.name}`;
+            });
+            const dropDown = `<select id="page-value" class="form-control" style="margin:0 auto">${options}</select>`;
+            alertify.alert()
+                .setting({
+                    'label': 'Đồng ý',
+                    'message': dropDown,
+                    'onok': function () {
+                        const value = $("#page-value").val();
+                        console.log(value);
+                    }
+                }).setHeader('<b> Chọn nhóm quản lý </b> ').show();
+        });
 }
 _getProfile = () => {
     FB.api(
